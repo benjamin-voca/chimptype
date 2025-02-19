@@ -1,14 +1,18 @@
+import { Button } from "~/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "~/components/ui/select"
-import { createMemo, createResource, createSignal } from "solid-js";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuGroupLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import { createResource } from "solid-js";
 import { useLocation } from "@solidjs/router";
 import { For } from "solid-js";
 import { getLists } from "~/utils";
+import { useGroup } from "~/contexts/GroupContext";
 
 interface Group {
   name: string;
@@ -16,12 +20,12 @@ interface Group {
 }
 
 export default function Nav() {
-  const [group, setGroup]= createSignal("english");
+  const { group, setGroup } = useGroup(); // Access shared state
   const [groupList] = createResource<Group[]>(async () => {
     const response = await getLists();
     return response.json();
   });
-  const names = createMemo(() => groupList()?.map(group => group.name) || []);
+
   const location = useLocation();
   const active = (path: string) =>
     path == location.pathname ? "border-sky-600" : "border-transparent hover:border-sky-600";
@@ -36,18 +40,25 @@ export default function Nav() {
           <a href="/about">About</a>
         </li>
 
-      <Select
-          value={group()}
-          onChange={setGroup}
-          options={names()}
-          placeholder="English"
-          itemComponent={(props) => <SelectItem item={props.item}>{props.item.rawValue}</SelectItem>}
-      >
-          <SelectTrigger aria-label="Fruit" class="w-[180px]">
-              <SelectValue<string>>{(state) => state.selectedOption()}</SelectValue>
-          </SelectTrigger>
-          <SelectContent />
-      </Select>
+        <DropdownMenu>
+          <DropdownMenuTrigger as={Button<"button">}>Language</DropdownMenuTrigger>
+          <DropdownMenuContent class="w-48 max-h-60 overflow-y-auto bg-sky-600">
+            <For each={groupList()}>
+              {(l_group) => (
+                <DropdownMenuGroup>
+                  <DropdownMenuGroupLabel>{l_group.name}</DropdownMenuGroupLabel>
+                  <DropdownMenuRadioGroup value={group()} onChange={setGroup}>
+                    <For each={l_group.languages}>
+                      {(lang) => (
+                        <DropdownMenuRadioItem value={lang}>{lang}</DropdownMenuRadioItem>
+                      )}
+                    </For>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuGroup>
+              )}
+            </For>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </ul>
     </nav>
   );

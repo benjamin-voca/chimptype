@@ -24,6 +24,6 @@ export const diffTuple = (s: string, t: string): [string, string] => {
 };
 
 // console.log(diffTuple("ben" + " ", "ben"))
-export const getLists = async () => (await fetch("./static/_groups.json"))
-export const getWords = async (list: string) => { await fetch(`./static/${list}.json`) }
+export const getLists = async () => (await fetch("/src/static/_groups.json"))
+export const getWords = async (list: string) => (await fetch(`/src/static/${list}.json`))
 
