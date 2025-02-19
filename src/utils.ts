@@ -3,23 +3,16 @@ function diffTuple(s: string, t: string): [string, string] {
     if (t.startsWith(s)) {
         return [s, t.substring(s.length)];
     }
-    // If s starts with t, then t is kept and nothing is appended.
-    if (s.startsWith(t)) {
-        return [t, ""];
-    }
-    // Otherwise, we compare a “target” substring.
-    // When t is shorter than s, we use s.substring(0, t.length); otherwise use all of s.
-    const sTarget = s.length > t.length ? s.substring(0, t.length) : s;
-
+    // Otherwise, find the common prefix.
     let commonPrefix = "";
-    for (let i = 0; i < Math.min(sTarget.length, t.length); i++) {
-        if (sTarget[i] === t[i]) {
-            commonPrefix += sTarget[i];
+    for (let i = 0; i < Math.min(s.length, t.length); i++) {
+        if (s[i] === t[i]) {
+            commonPrefix += s[i];
         } else {
             break;
         }
     }
-    // The diff tuple is [commonPrefix, the rest of sTarget]
-    return [commonPrefix, sTarget.substring(commonPrefix.length)];
-}
-export default diffTuple;
+    return [commonPrefix, s.substring(commonPrefix.length)];
+};
+
+console.log(diffTuple("ben" + " ", "ben"))
